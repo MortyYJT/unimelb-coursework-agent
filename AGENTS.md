@@ -37,15 +37,15 @@ Roles: OpenSpec owns *what* we build and the current-truth specs. Superpowers ow
 
 ## Agents and human gates
 
-- **User** decides at key points (picks from proposed options and states why). **Claude Code** researches, proposes, writes the OpenSpec change and a scheduled plan (milestones with target dates), splits it into GitHub issues, dispatches, reviews, pushes, and opens PRs. **Codex** implements one issue per worktree with TDD and commits locally. **dsh** writes learning quizzes on merged work and may also implement.
-- Development speed comes first; agents run most of the work. Two gates block and are always human: approving the design and merging a PR. Never automate them. Learning is asynchronous: quizzes queue in `note/interview/` and never block development.
+- **User** decides at key points (picks from proposed options and states why). **Claude Code** researches, proposes, writes the OpenSpec change and a scheduled plan (milestones with target dates), splits it into GitHub issues, dispatches, reviews, pushes, opens PRs, and merges them. **Codex** implements one issue per worktree with TDD and commits locally. **dsh** writes learning quizzes on merged work and may also implement.
+- Development speed comes first; agents run most of the work. One gate blocks and is always human: the user picks the design (architecture, tech selection, data model, anything an interviewer would ask "why" about). Never automate it. Claude merges a PR only after a fresh-context review says "ready to merge" and CI passes (until CI exists, doc-only PRs may merge after review); see `note/decisions.md` #10. Learning is asynchronous: quizzes queue in `note/interview/` and never block development.
 - Record every user decision with its reason in the OpenSpec change or `note/decisions.md`.
 - Hand off through files and GitHub (issue -> PR -> review), never through chat memory. Formats are in the guidelines, "Multi-agent collaboration".
 
 ## Git
 
 - Follow [CONTRIBUTING.md](CONTRIBUTING.md) for branches, commits, and pull requests.
-- Work on `<agent>/<topic>` branches (your agent's prefix, per [CONTRIBUTING.md](CONTRIBUTING.md)) and open a pull request into `main`. The user merges. Never push to `main`, force-push, or rewrite pushed history.
+- Work on `<agent>/<topic>` branches (your agent's prefix, per [CONTRIBUTING.md](CONTRIBUTING.md)) and open a pull request into `main`. Claude merges per "Agents and human gates". Never push to `main`, force-push, or rewrite pushed history.
 
 ## Session continuity
 
