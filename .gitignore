@@ -1,0 +1,19 @@
+# Dependencies and build output
+node_modules/
+dist/
+coverage/
+
+# Secrets: never commit (see AGENTS.md red lines)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local-only coursework data: browser profiles, iCal URLs, synced data, run metrics
+.local/
+*.ics
+
+# OS / editor
+.DS_Store
+.idea/

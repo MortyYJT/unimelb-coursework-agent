@@ -1,0 +1,79 @@
+# Repository instructions
+
+Applies to the whole repository. Higher-priority instructions and the user's explicit scope win over this file.
+Keep this file short. Details live in [docs/engineering/agent-guidelines.md](docs/engineering/agent-guidelines.md) and are read on demand.
+
+This file and its companions were installed from a template shared by several agents. **Where a name does
+not fit the project or the agent reading it** — a branch prefix, a command, a path to an agent-specific
+directory — adapt it and say what you changed. Adapt the form freely; do not drop a rule because it is
+inconvenient.
+
+## Always apply
+
+- Check premises, logical gaps, and missing information before acting. Judge independently; separate facts, inferences, predictions, and preferences. Verify numbers, people, and outcomes. Never invent results.
+- Never commit secrets, `.env` files, private contact details, the owner's real name, or identifying local paths. Identify the owner only by their public handle (see the user-level rules).
+- Talk to the user in Chinese. Write source comments and engineering docs in English. Chinese planning notes go in `note/`.
+
+## Workflow
+
+Pick one track before writing anything, and say which one.
+
+**Product / logic work** (data models, rules, backend, agents, tools, anything with a business rule):
+
+```
+OpenSpec change (what & why) -> plan -> TDD (red, then green) -> review -> verification -> archive the change
+```
+
+- Review: run it in a fresh-context subagent, or the equivalent review command your agent provides. Report only gaps that affect correctness or the stated requirements, not style.
+- Verification: run the project check command and show its output as evidence. Do not claim "done" without it.
+
+**Pure interface work** (pages, styling; logic is NOT included):
+
+```
+design in chat -> build -> verify in a real browser -> screenshots
+```
+
+Roles: OpenSpec owns *what* we build and the current-truth specs. Superpowers owns *how* we build it correctly (brainstorm, plan, TDD, review, verification). Do not write a second spec; the OpenSpec change is the spec.
+
+## Agents and human gates
+
+- **User** decides at key points (picks from proposed options and states why). **Claude Code** researches, proposes, writes the OpenSpec change and a scheduled plan (milestones with target dates), splits it into GitHub issues, dispatches, reviews, pushes, and opens PRs. **Codex** implements one issue per worktree with TDD and commits locally. **dsh** writes learning quizzes on merged work and may also implement.
+- Development speed comes first; agents run most of the work. Two gates block and are always human: approving the design and merging a PR. Never automate them. Learning is asynchronous: quizzes queue in `note/interview/` and never block development.
+- Record every user decision with its reason in the OpenSpec change or `note/decisions.md`.
+- Hand off through files and GitHub (issue -> PR -> review), never through chat memory. Formats are in the guidelines, "Multi-agent collaboration".
+
+## Git
+
+- Follow [CONTRIBUTING.md](CONTRIBUTING.md) for branches, commits, and pull requests.
+- Work on `<agent>/<topic>` branches (your agent's prefix, per [CONTRIBUTING.md](CONTRIBUTING.md)) and open a pull request into `main`. The user merges. Never push to `main`, force-push, or rewrite pushed history.
+
+## Session continuity
+
+- At the start of a session, read `note/handoff.md` if it exists, and check it against `git status` and `git log` before trusting it.
+- Before ending a session, or when the user asks for a handoff, overwrite `note/handoff.md` (format in the guidelines, "Communication and documentation").
+
+## Read before the relevant task
+
+Do not load the whole guidelines file for small edits. Read only the listed sections.
+
+| Task | Sections in [agent guidelines](docs/engineering/agent-guidelines.md) |
+| --- | --- |
+| Resolving uncertainty, preparing factual content | Judgment and evidence |
+| Importing content, assets, or profile data | Identity and privacy |
+| Planning, implementing, or verifying a change | Scope and implementation; Verification and deployment |
+| Git state, commits, pushes, pull requests | Git and changes; Identity and privacy |
+| Deploying or releasing | Verification and deployment; Git and changes |
+| Writing docs or reporting milestones | Communication and documentation |
+| Dispatching, reviewing, or handing work between agents | Multi-agent collaboration; Git and changes |
+
+## Project-specific (fill in per project)
+
+- **What this is:** `coursework`, a CLI agent that syncs University of Melbourne coursework from Canvas and Ed into one model, breaks assignments into cited tasks, schedules them, and reports changes between runs.
+- **Stack and commands:** full-stack TypeScript; Playwright for browser fetching. Runtime, package manager, and test runner are TODO (decided in the tech-selection step). install `TODO`, dev `TODO`, check `bash .claude/check.sh` (the same command CI runs).
+- **Domain red lines:**
+  - Data access: no self-issued Canvas tokens (forbidden by the university). Use iCal, a logged-in Playwright profile, or manual PDF upload. A model never sees or types passwords; on expired login, notify the user.
+  - Privacy: strip classmates' personal data before anything reaches a model. iCal URLs, browser profiles, API keys, and course data never enter the repo or test fixtures unredacted.
+  - Autonomy: L0 read / L1 assist / L2 draft / L3 do-with-user-confirmation, granted per assignment with an audit log. Never build L4 (auto-submit).
+  - Every extracted claim cites its source text. Resume or README numbers come only from real recorded metrics (sync time, steps, cost, estimate vs actual, extraction accuracy).
+  - Code from unlicensed repos: ideas only, no copying. Copied Apache-2.0/MIT code keeps its notice and attribution.
+- **Ask first before:** adding a dependency, changing the data model or storage schema, touching CI or deployment, deleting files, any write action on Canvas or Ed.
