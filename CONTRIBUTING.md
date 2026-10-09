@@ -34,7 +34,7 @@ type(scope): imperative summary
 
 - Open one PR per branch into `main`. Fill in the PR template.
 - Keep PRs reviewable: one topic, with verification evidence in the description.
-- CI must pass. Merging follows `AGENTS.md`, "Agents and human gates".
+- CI must pass once it exists. Who merges, and the pre-CI and design exceptions, follow `AGENTS.md`, "Agents and human gates".
 
 ## Checks
 
