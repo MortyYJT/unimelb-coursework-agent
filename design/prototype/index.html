@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>coursework 原型</title>
+<!--
+  Static UI prototype for `coursework ui` (decision #21).
+  All data below is synthetic. No network access, no dependencies.
+  Purpose: agree on pages and information before implementation, and derive
+  which read commands the agent protocol must expose.
+-->
+<style>
+  :root {
+    --bg: #f6f7f9; --panel: #ffffff; --text: #1d2330; --muted: #667085; --line: #e4e7ec;
+    --accent: #3b5bdb; --accent-soft: #e8edff; --ok: #2b8a3e; --ok-soft: #e6f4ea;
+    --warn: #c2410c; --warn-soft: #fff1e6; --danger: #c92a2a; --danger-soft: #ffe8e8;
+    --manual: #7048e8; --manual-soft: #f1ebff;
+    --radius: 10px; --shadow: 0 1px 2px rgba(16,24,40,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1218; --panel: #171b23; --text: #e6e9ef; --muted: #98a2b3; --line: #262c37;
+      --accent: #7c96ff; --accent-soft: #1f2740; --ok: #5cc27a; --ok-soft: #16261c;
+      --warn: #f59f5b; --warn-soft: #2d2017; --danger: #ff7a7a; --danger-soft: #2e1a1a;
+      --manual: #a98bff; --manual-soft: #241d3a; --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1218; --panel: #171b23; --text: #e6e9ef; --muted: #98a2b3; --line: #262c37;
+    --accent: #7c96ff; --accent-soft: #1f2740; --ok: #5cc27a; --ok-soft: #16261c;
+    --warn: #f59f5b; --warn-soft: #2d2017; --danger: #ff7a7a; --danger-soft: #2e1a1a;
+    --manual: #a98bff; --manual-soft: #241d3a; --shadow: none;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+    font: 14px/1.5 -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", sans-serif; }
+  button, input, select { font: inherit; color: inherit; }
+  .app { display: grid; grid-template-columns: 200px 1fr; min-height: 100vh; }
+  nav.side { background: var(--panel); border-right: 1px solid var(--line); padding: 16px 10px; }
+  .brand { font-weight: 700; padding: 4px 10px 16px; letter-spacing: .2px; }
+  .brand small { display: block; color: var(--muted); font-weight: 400; font-size: 12px; }
+  nav.side a { display: block; padding: 8px 10px; border-radius: 8px; color: var(--text); text-decoration: none; margin-bottom: 2px; }
+  nav.side a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  nav.side a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  main { padding: 0 24px 40px; min-width: 0; }
+  .status { position: sticky; top: 0; z-index: 2; background: var(--bg); display: flex; flex-wrap: wrap; gap: 8px;
+    align-items: center; padding: 14px 0; border-bottom: 1px solid var(--line); margin-bottom: 20px; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px;
+    background: var(--panel); border: 1px solid var(--line); font-size: 12px; white-space: nowrap; }
+  .chip.ok { color: var(--ok); background: var(--ok-soft); border-color: transparent; }
+  .chip.warn { color: var(--warn); background: var(--warn-soft); border-color: transparent; }
+  .chip.sample { color: var(--muted); border-style: dashed; }
+  .spacer { flex: 1; }
+  .btn { border: 1px solid var(--line); background: var(--panel); border-radius: 8px; padding: 5px 12px; cursor: pointer; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  h1 { font-size: 20px; margin: 0 0 16px; }
+  h2 { font-size: 15px; margin: 0 0 12px; }
+  .grid2 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
+  .muted { color: var(--muted); }
+  .week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
+  .day { border: 1px solid var(--line); border-radius: 8px; padding: 8px; min-height: 150px; background: var(--bg); }
+  .day.today { border-color: var(--accent); }
+  .day h3 { font-size: 12px; margin: 0 0 6px; color: var(--muted); font-weight: 600; }
+  .ev { font-size: 12px; border-radius: 6px; padding: 4px 6px; margin-bottom: 4px; line-height: 1.35; }
+  .ev.due { background: var(--danger-soft); color: var(--danger); font-weight: 600; }
+  .ev.block { background: var(--accent-soft); color: var(--accent); }
+  .ev.manual { background: var(--manual-soft); color: var(--manual); }
+  .change { padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .change:last-child { border-bottom: 0; }
+  .tag { font-size: 11px; padding: 1px 6px; border-radius: 4px; margin-right: 6px; font-weight: 600; }
+  .tag.new { background: var(--ok-soft); color: var(--ok); }
+  .tag.upd { background: var(--warn-soft); color: var(--warn); }
+  .tag.due { background: var(--danger-soft); color: var(--danger); }
+  .course { margin-bottom: 20px; }
+  .course-title { display: flex; align-items: baseline; gap: 8px; margin: 0 0 8px; }
+  .item { border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); margin-bottom: 8px; box-shadow: var(--shadow); }
+  .item > summary { list-style: none; cursor: pointer; padding: 12px 14px; display: grid;
+    grid-template-columns: 1fr 160px 110px; gap: 12px; align-items: center; }
+  .item > summary::-webkit-details-marker { display: none; }
+  .bar { height: 6px; border-radius: 99px; background: var(--line); overflow: hidden; }
+  .bar > i { display: block; height: 100%; background: var(--accent); }
+  .steps { padding: 0 14px 12px; border-top: 1px solid var(--line); }
+  .step { display: grid; grid-template-columns: 22px 1fr auto; gap: 8px; padding: 10px 0; border-bottom: 1px dashed var(--line); }
+  .step:last-child { border-bottom: 0; }
+  .step.done .step-title { text-decoration: line-through; color: var(--muted); }
+  .cite { margin-top: 6px; font-size: 12px; }
+  .cite summary { cursor: pointer; color: var(--accent); }
+  blockquote { margin: 6px 0 0; padding: 6px 10px; border-left: 3px solid var(--accent); background: var(--accent-soft); border-radius: 0 6px 6px 0; }
+  .src { font-size: 11px; color: var(--muted); }
+  form.add { display: grid; grid-template-columns: 2fr 1fr 1fr 90px auto; gap: 8px; align-items: end; }
+  form.add label { font-size: 12px; color: var(--muted); display: grid; gap: 4px; }
+  form.add input, form.add select { border: 1px solid var(--line); background: var(--bg); border-radius: 8px; padding: 6px 8px; min-width: 0; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .seg button { border: 0; background: var(--panel); padding: 5px 14px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+  .month { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+  .month .dow { font-size: 12px; color: var(--muted); text-align: center; padding: 4px 0; }
+  .mcell { min-height: 92px; border: 1px solid var(--line); border-radius: 6px; padding: 4px; background: var(--panel); }
+  .mcell.out { opacity: .45; }
+  .mcell.today { border-color: var(--accent); }
+  .mcell .n { font-size: 11px; color: var(--muted); }
+  .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .kpi .v { font-size: 22px; font-weight: 700; }
+  .kpi .l { font-size: 12px; color: var(--muted); }
+  .bars { display: grid; gap: 10px; }
+  .brow { display: grid; grid-template-columns: 170px 1fr; gap: 10px; align-items: center; font-size: 12px; }
+  .pair { display: grid; gap: 3px; }
+  .pair i { display: block; height: 8px; border-radius: 4px; }
+  .pair i.est { background: var(--muted); opacity: .55; }
+  .pair i.act { background: var(--accent); }
+  .legend { display: flex; gap: 14px; font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+  .legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; background: var(--c); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; }
+  @media (max-width: 1280px) { .grid2 { grid-template-columns: 1fr; } }
+  @media (max-width: 900px) {
+    .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    form.add { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 720px) {
+    .app { grid-template-columns: 1fr; }
+    nav.side { border-right: 0; border-bottom: 1px solid var(--line); display: flex; gap: 4px; overflow-x: auto; padding: 8px 16px; }
+    .brand { padding: 6px 8px 6px 0; }
+    .brand small { display: none; }
+    nav.side a { white-space: nowrap; margin: 0; }
+    main { padding: 0 16px 32px; }
+    .week { grid-template-columns: 1fr; }
+    .day { min-height: 0; }
+    .item > summary { grid-template-columns: 1fr; gap: 6px; }
+    .brow { grid-template-columns: 1fr; gap: 4px; }
+    .mcell { min-height: 56px; }
+    .mcell .ev { font-size: 0; padding: 0; height: 5px; margin-bottom: 2px; }
+  }
+  @media (prefers-reduced-motion: no-preference) { .bar > i { transition: width .25s ease; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="side" aria-label="主导航">
+    <div class="brand">coursework<small>墨大课业助手</small></div>
+    <a href="#overview" data-page="overview">总览</a>
+    <a href="#items" data-page="items">作业</a>
+    <a href="#schedule" data-page="schedule">排期</a>
+    <a href="#metrics" data-page="metrics">度量</a>
+  </nav>
+  <main>
+    <div class="status" role="status">
+      <span class="chip">上次同步：今天 09:12（3 分 41 秒）</span>
+      <span class="chip" id="dueChip"></span>
+      <span class="chip ok">Canvas 已登录</span>
+      <span class="chip warn">Ed 登录已过期 · 请重新登录</span>
+      <span class="chip sample">示例数据</span>
+      <span class="spacer"></span>
+      <button class="btn" id="themeBtn" type="button">切换主题</button>
+    </div>
+    <section id="page"></section>
+  </main>
+</div>
+
+<script>
+// ---- Synthetic data (shape mirrors the planned SQLite model) ----
+const TODAY = new Date(2026, 9, 12); // Mon 12 Oct 2026, the prototype's "today"
+const d = (m, day, h = 23, min = 59) => new Date(2026, m - 1, day, h, min);
+
+const courses = [
+  { id: "c1", code: "COMP90099", name: "Software Systems Design" },
+  { id: "c2", code: "INFO90088", name: "Data Analytics Practice" },
+  { id: "c3", code: "MAST90077", name: "Applied Statistics" },
+];
+
+// Task.source: "coursework" tasks carry citations; "manual" tasks do not.
+const items = [
+  { id: "i1", course: "c1", title: "Assignment 2: Event booking service", due: d(10, 16), source: "Canvas",
+    steps: [
+      { t: "读懂需求并列出 5 个核心用例", est: 60, done: true, cite: "Your design must support at least five use cases, including cancellation and waitlisting.", loc: "Assignment 2 spec · §2 第 3 行" },
+      { t: "画出领域模型类图", est: 90, done: true, cite: "Submit a domain model as a UML class diagram (PDF, max 2 pages).", loc: "Assignment 2 spec · §3 第 1 行" },
+      { t: "实现预订与候补逻辑并写单元测试", est: 240, done: false, cite: "All booking logic must be covered by unit tests; coverage below 70% loses up to 4 marks.", loc: "Rubric · 第 2 行" },
+      { t: "写 2 页设计说明", est: 120, done: false, cite: "Include a design rationale of no more than two pages explaining your pattern choices.", loc: "Assignment 2 spec · §4 第 2 行" },
+    ] },
+  { id: "i2", course: "c2", title: "Project proposal", due: d(10, 14, 17, 0), source: "Canvas",
+    steps: [
+      { t: "选定数据集并确认许可", est: 45, done: true, cite: "Datasets must be publicly available with a licence that permits academic use.", loc: "Proposal brief · 第 4 行" },
+      { t: "写研究问题与评价指标", est: 90, done: false, cite: "State one primary research question and at least two evaluation metrics.", loc: "Proposal brief · 第 6 行" },
+      { t: "提交 800 字 proposal", est: 60, done: false, cite: "The proposal is limited to 800 words excluding references.", loc: "Proposal brief · 第 9 行" },
+    ] },
+  { id: "i3", course: "c3", title: "Problem set 5", due: d(10, 19, 12, 0), source: "Ed",
+    steps: [
+      { t: "完成第 1–3 题（回归诊断）", est: 120, done: false, cite: "Questions 1–3 use the residual diagnostics covered in Week 9.", loc: "Ed lesson · Problem set 5 · 第 2 行" },
+      { t: "完成第 4 题并附 R 代码", est: 90, done: false, cite: "Question 4 requires your R code as an appendix.", loc: "Ed lesson · Problem set 5 · 第 5 行" },
+    ] },
+  { id: "m1", course: null, title: "准备实习面试：系统设计题", due: d(10, 17, 18, 0), source: "手动",
+    steps: [ { t: "复习两道系统设计题", est: 90, done: false, manual: true } ] },
+];
+
+const blocks = [ // scheduled work blocks
+  { day: 12, t: "10:00 Proposal：研究问题", c: "c2" }, { day: 12, t: "14:00 A2：预订逻辑", c: "c1" },
+  { day: 13, t: "09:00 Proposal：成稿", c: "c2" }, { day: 13, t: "15:00 A2：单元测试", c: "c1" },
+  { day: 14, t: "10:00 A2：设计说明", c: "c1" }, { day: 15, t: "13:00 PS5：第 1–3 题", c: "c3" },
+  { day: 16, t: "09:00 A2：最终检查", c: "c1" }, { day: 17, t: "16:00 面试准备", c: null },
+  { day: 18, t: "10:00 PS5：第 4 题", c: "c3" },
+];
+
+const changes = [
+  { kind: "due", text: "COMP90099 · Assignment 2 截止时间从 10/18 提前到 10/16 23:59", when: "今天 09:12", src: "Canvas" },
+  { kind: "upd", text: "INFO90088 · Project proposal 字数上限从 1000 改为 800", when: "今天 09:12", src: "Canvas" },
+  { kind: "new", text: "MAST90077 · 发布 Problem set 5", when: "昨天 21:40", src: "Ed" },
+  { kind: "new", text: "COMP90099 · 新公告：答疑时间改到周三", when: "10/09 18:05", src: "Canvas" },
+];
+
+const metrics = {
+  syncs: [ { when: "10/12 09:12", dur: "3m41s", steps: 27, cost: "$0.04", ok: true },
+           { when: "10/12 03:12", dur: "3m20s", steps: 25, cost: "$0.00", ok: true },
+           { when: "10/11 21:12", dur: "—", steps: 4, cost: "$0.00", ok: false, note: "Ed 登录过期" } ],
+  estVsAct: [ { t: "A1 · 领域模型", est: 90, act: 130 }, { t: "Lab 4 · SQL 练习", est: 60, act: 55 },
+              { t: "PS4 · 第 1–4 题", est: 180, act: 240 }, { t: "Proposal · 选数据集", est: 45, act: 50 } ],
+  accuracy: "91%", accuracyN: 44,
+};
+
+// ---- Helpers ----
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const courseOf = (id) => courses.find((c) => c.id === id);
+const fmt = (dt) => `${dt.getMonth() + 1}/${dt.getDate()} ${String(dt.getHours()).padStart(2, "0")}:${String(dt.getMinutes()).padStart(2, "0")}`;
+const sameDay = (a, b) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+const WD = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
+const progress = (it) => Math.round(100 * it.steps.filter((s) => s.done).length / it.steps.length);
+const label = (cid) => (cid ? courseOf(cid).code : "个人");
+
+function weekDays() {
+  return Array.from({ length: 7 }, (_, i) => new Date(2026, 9, 12 + i));
+}
+
+function dayEvents(date) {
+  const dues = items.filter((it) => sameDay(it.due, date))
+    .map((it) => `<div class="ev ${it.source === "手动" ? "manual" : "due"}">截止 ${esc(label(it.course))} · ${esc(it.title)}</div>`);
+  const bl = blocks.filter((b) => date.getMonth() === 9 && b.day === date.getDate())
+    .map((b) => `<div class="ev ${b.c ? "block" : "manual"}">${esc(b.t)}</div>`);
+  return dues.concat(bl).join("");
+}
+
+// ---- Pages ----
+function overview() {
+  const days = weekDays().map((dt) => `
+    <div class="day ${sameDay(dt, TODAY) ? "today" : ""}">
+      <h3>${WD[dt.getDay()]} ${dt.getMonth() + 1}/${dt.getDate()}</h3>${dayEvents(dt)}
+    </div>`).join("");
+  const ch = changes.map((c) => `
+    <div class="change"><span class="tag ${c.kind}">${{ new: "新增", upd: "修改", due: "截止变动" }[c.kind]}</span>${esc(c.text)}
+      <div class="src">${esc(c.when)} · 来自 ${esc(c.src)}</div></div>`).join("");
+  return `<h1>总览</h1>
+    <div class="grid2">
+      <div class="card"><h2>本周时间线</h2><div class="week">${days}</div></div>
+      <div class="card"><h2>最新变化</h2>${ch}</div>
+    </div>`;
+}
+
+function itemsPage() {
+  const groups = [...courses.map((c) => c.id), null].map((cid) => {
+    const list = items.filter((it) => it.course === cid);
+    if (!list.length) return "";
+    const head = cid ? `${courseOf(cid).code} <span class="muted">${esc(courseOf(cid).name)}</span>` : "个人任务";
+    return `<div class="course"><h2 class="course-title">${head}</h2>${list.map(itemCard).join("")}</div>`;
+  }).join("");
+  const opts = courses.map((c) => `<option value="${c.id}">${c.code}</option>`).join("");
+  return `<h1>作业</h1>
+    <div class="card" style="margin-bottom:20px">
+      <h2>添加任务</h2>
+      <form class="add" id="addForm">
+        <label>标题<input name="t" required placeholder="例如：准备小组会议"></label>
+        <label>归属<select name="c"><option value="">个人</option>${opts}</select></label>
+        <label>截止<input name="due" type="date" value="2026-10-17" required></label>
+        <label>预计分钟<input name="est" type="number" min="5" step="5" value="60"></label>
+        <button class="btn primary" type="submit">添加</button>
+      </form>
+      <p class="muted" style="margin:8px 0 0;font-size:12px">手动任务不需要引文，同样参与排程。</p>
+    </div>${groups}`;
+}
+
+function itemCard(it) {
+  const p = progress(it);
+  const steps = it.steps.map((s, i) => `
+    <div class="step ${s.done ? "done" : ""}">
+      <input type="checkbox" aria-label="完成：${esc(s.t)}" data-item="${it.id}" data-step="${i}" ${s.done ? "checked" : ""}>
+      <div><div class="step-title">${esc(s.t)}</div>
+        ${s.cite ? `<details class="cite"><summary>原文出处</summary><blockquote>${esc(s.cite)}</blockquote><div class="src">${esc(s.loc)} · 引文已逐字核对</div></details>`
+                 : `<div class="src">手动任务</div>`}
+      </div>
+      <span class="muted">${s.est} 分钟</span>
+    </div>`).join("");
+  return `<details class="item"${it.id === "i1" ? " open" : ""}>
+    <summary><div><strong>${esc(it.title)}</strong><div class="src">截止 ${fmt(it.due)} · 来源 ${esc(it.source)}</div></div>
+      <div class="bar" role="img" aria-label="进度 ${p}%"><i style="width:${p}%"></i></div>
+      <span class="muted">${it.steps.filter((s) => s.done).length}/${it.steps.length} 步 · ${p}%</span></summary>
+    <div class="steps">${steps}</div></details>`;
+}
+
+let view = "week";
+function schedulePage() {
+  const seg = `<div class="seg" role="group" aria-label="视图">
+      <button type="button" data-view="week" aria-pressed="${view === "week"}">周</button>
+      <button type="button" data-view="month" aria-pressed="${view === "month"}">月</button></div>`;
+  let body;
+  if (view === "week") {
+    body = `<div class="week">${weekDays().map((dt) => `<div class="day ${sameDay(dt, TODAY) ? "today" : ""}">
+      <h3>${WD[dt.getDay()]} ${dt.getMonth() + 1}/${dt.getDate()}</h3>${dayEvents(dt)}</div>`).join("")}</div>`;
+  } else {
+    const first = new Date(2026, 9, 1), start = new Date(first);
+    start.setDate(1 - ((first.getDay() + 6) % 7)); // grid starts on Monday
+    const cells = Array.from({ length: 42 }, (_, i) => new Date(start.getFullYear(), start.getMonth(), start.getDate() + i));
+    body = `<div class="month">${["一", "二", "三", "四", "五", "六", "日"].map((w) => `<div class="dow">周${w}</div>`).join("")}
+      ${cells.map((dt) => `<div class="mcell ${dt.getMonth() !== 9 ? "out" : ""} ${sameDay(dt, TODAY) ? "today" : ""}">
+        <div class="n">${dt.getDate()}</div>${dt.getMonth() === 9 ? dayEvents(dt) : ""}</div>`).join("")}</div>`;
+  }
+  return `<h1>排期</h1>
+    <div class="card"><div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+      ${seg}<span class="muted">2026 年 10 月</span><span class="spacer"></span>
+      <span class="legend" style="margin:0"><span style="--c:var(--danger)">截止</span><span style="--c:var(--accent)">学习时间块</span><span style="--c:var(--manual)">个人</span></span>
+    </div>${body}</div>`;
+}
+
+function metricsPage() {
+  const max = Math.max(...metrics.estVsAct.flatMap((r) => [r.est, r.act]));
+  const bars = metrics.estVsAct.map((r) => `<div class="brow"><span>${esc(r.t)}</span>
+    <div class="pair"><i class="est" style="width:${100 * r.est / max}%" title="预计 ${r.est} 分钟"></i>
+      <i class="act" style="width:${100 * r.act / max}%" title="实际 ${r.act} 分钟"></i></div></div>`).join("");
+  const rows = metrics.syncs.map((s) => `<tr><td>${s.when}</td><td>${s.dur}</td><td>${s.steps}</td><td>${s.cost}</td>
+    <td>${s.ok ? '<span class="chip ok">成功</span>' : `<span class="chip warn">失败 · ${esc(s.note)}</span>`}</td></tr>`).join("");
+  return `<h1>度量</h1>
+    <div class="kpis">
+      <div class="card kpi"><div class="v">3m41s</div><div class="l">最近一次同步耗时</div></div>
+      <div class="card kpi"><div class="v">27</div><div class="l">最近一次同步步数</div></div>
+      <div class="card kpi"><div class="v">${metrics.accuracy}</div><div class="l">抽取准确率（${metrics.accuracyN} 条标注）</div></div>
+      <div class="card kpi"><div class="v">+24%</div><div class="l">实际用时比预计多</div></div>
+    </div>
+    <div class="grid2">
+      <div class="card"><h2>预计 vs 实际用时</h2>
+        <div class="legend"><span style="--c:var(--muted)">预计</span><span style="--c:var(--accent)">实际</span></div>
+        <div class="bars">${bars}</div></div>
+      <div class="card"><h2>同步记录</h2><table><thead><tr><th>时间</th><th>耗时</th><th>步数</th><th>成本</th><th>结果</th></tr></thead>
+        <tbody>${rows}</tbody></table></div>
+    </div>`;
+}
+
+// ---- Router and interactions ----
+const pages = { overview, items: itemsPage, schedule: schedulePage, metrics: metricsPage };
+function render() {
+  const key = (location.hash || "#overview").slice(1);
+  const page = pages[key] ? key : "overview";
+  $("#page").innerHTML = pages[page]();
+  document.querySelectorAll("nav.side a").forEach((a) => {
+    const on = a.dataset.page === page;
+    a.classList.toggle("active", on);
+    a.toggleAttribute("aria-current", on);
+  });
+  const dueThisWeek = items.filter((it) => it.due >= TODAY && it.due < new Date(2026, 9, 19)).length;
+  $("#dueChip").textContent = `本周截止 ${dueThisWeek} 项`;
+}
+
+document.addEventListener("change", (e) => {
+  const cb = e.target.closest("input[type=checkbox][data-item]");
+  if (!cb) return;
+  items.find((it) => it.id === cb.dataset.item).steps[+cb.dataset.step].done = cb.checked;
+  const open = [...document.querySelectorAll("details.item")].map((x) => x.open);
+  render();
+  document.querySelectorAll("details.item").forEach((x, i) => (x.open = open[i]));
+});
+
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-view]");
+  if (b) { view = b.dataset.view; render(); }
+});
+
+document.addEventListener("submit", (e) => {
+  if (e.target.id !== "addForm") return;
+  e.preventDefault();
+  const f = new FormData(e.target);
+  const [y, m, day] = f.get("due").split("-").map(Number);
+  items.push({ id: "m" + Date.now(), course: f.get("c") || null, title: f.get("t"), due: new Date(y, m - 1, day, 23, 59),
+    source: "手动", steps: [{ t: f.get("t"), est: +f.get("est") || 60, done: false, manual: true }] });
+  render();
+});
+
+$("#themeBtn").addEventListener("click", () => {
+  const root = document.documentElement;
+  const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  root.dataset.theme = dark ? "light" : "dark";
+});
+
+window.addEventListener("hashchange", render);
+render();
+</script>
+</body>
+</html>
