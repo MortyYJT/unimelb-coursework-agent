@@ -12,8 +12,8 @@
 - 模板按 `~/Desktop/通用AI开发模板/README.md` 装好；`AGENTS.md` 79 行，项目块已填（技术栈命令留 TODO）
 - guard hook：喂入「推 main」的 JSON 返回 exit 2；`settings.json` 校验通过
 - 仓库级 git 身份：`MortyYJT` + noreply（只改了本仓库 config）
-- 决策记录：`note/decisions.md`（1–11 条）
-- 合并由 Claude 做：审查通过 + CI 绿（CI 建好前，纯文档 PR 审查通过即可），见决策 #10
+- 决策记录：`note/decisions.md`（1–12 条）
+- 合并由 Claude 做：审查通过 + CI 绿；CI 建好前只有纯文档 PR 能合并，代码 PR 等 CI；设计 PR 需先记下用户的选择（决策 #10、#12）
 
 ## 下一步
 1. **用户（不阻塞）：** 补 `note/decisions.md` 第 6、9 条的理由；强烈建议开 GitHub 邮箱隐私设置（见陷阱）。
