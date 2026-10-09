@@ -40,7 +40,7 @@ This document expands the root `AGENTS.md`. Read only the sections listed there 
 ## Git and changes
 
 - Inspect status, branch, HEAD, and remotes before changing repository state. Preserve unrelated user work.
-- Use `<agent>/<topic>` branches (your agent's prefix, per CONTRIBUTING.md) and reviewable pull requests; the user merges into `main`. Bootstrapping a brand-new repository on `main` requires explicit authorization.
+- Use `<agent>/<topic>` branches (your agent's prefix, per CONTRIBUTING.md) and reviewable pull requests merged into `main` per `AGENTS.md`, "Agents and human gates". Bootstrapping a brand-new repository on `main` requires explicit authorization.
 - Commit format, branch naming, and PR rules are in `CONTRIBUTING.md`. Run `git diff --cached --check` before committing.
 - Treat committing, pushing, releasing, merging, and irreversible deletion as separate actions. Proceed when the session clearly authorizes the action; otherwise prepare a reviewable result and name the specific missing authorization. Do not ask for the same permission twice.
 
@@ -48,7 +48,7 @@ This document expands the root `AGENTS.md`. Read only the sections listed there 
 
 The user decides, Claude Code designs and coordinates, Codex implements, and dsh (DeepSeek Harness) teaches. Agents talk only through repository files and GitHub. Adapt the commands below to the versions installed, and verify flags against current docs.
 
-- **Flow.** User request -> Claude researches and proposes options -> **gate 1: the user picks and states why** -> Claude writes the OpenSpec change and plan, then opens one GitHub issue per group of related plan steps -> Claude dispatches each issue to Codex -> Codex implements in its own worktree -> Claude reviews, then pushes and opens the PR -> Codex fixes review findings (at most two rounds; a third failure goes to the user) -> **gate 2: the user merges** -> Claude asks dsh to queue a quiz on the merged PR (non-blocking; the user answers whenever they have time).
+- **Flow.** User request -> Claude researches and proposes options -> **gate 1: the user picks and states why** -> Claude writes the OpenSpec change and plan, then opens one GitHub issue per group of related plan steps -> Claude dispatches each issue to Codex -> Codex implements in its own worktree -> Claude reviews, then pushes and opens the PR -> Codex fixes review findings (at most two rounds; a third failure goes to the user) -> Claude merges once the review says "ready to merge" and CI passes -> Claude asks dsh to queue a quiz on the merged PR (non-blocking; the user answers whenever they have time).
 - **Plan and schedule.** Spec-driven: the OpenSpec change says what; the plan orders the issues into milestones with target dates. When a date slips, re-plan and record why; do not silently move it.
 - **Issue (task order).** Background (OpenSpec change id and plan steps), what to do, acceptance criteria mapped to spec scenarios, scope (paths it may change and paths it must not touch), and any parts the user chose to write (left as `TODO(human)`; implementers must not fill them). Use `.github/ISSUE_TEMPLATE/task.md`.
 - **Dispatch to Codex.** Create a worktree on `codex/<topic>` from an up-to-date `main`, then run, for example, `codex exec --cd <worktree> --sandbox workspace-write -o <report-file> "<issue text plus: follow AGENTS.md, TDD, one commit per plan step, do not push>"`. Codex never pushes or opens PRs. The workspace-write sandbox has no network by default, and Claude's guard hook covers every remote action.
