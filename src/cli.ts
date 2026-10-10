@@ -6,8 +6,26 @@ const { version } = JSON.parse(
   readFileSync(new URL('../package.json', import.meta.url), 'utf8'),
 ) as { version: string };
 
-new Command()
+const program = new Command()
   .name('coursework')
   .description('Manage cited coursework tasks')
-  .version(version)
-  .parse();
+  .version(version);
+
+program.command('capture')
+  .description('Sign in manually and save local page snapshots')
+  .action(async () => {
+    try {
+      const { capture } = await import('./capture/command.js');
+      await capture();
+    } catch (error) {
+      if (error instanceof Error && 'code' in error && error.code === 'LOCKED') {
+        console.error(error.message);
+        process.exitCode = 3;
+      } else {
+        console.error('Capture failed. Check Chrome is installed and the local profile is available.');
+        process.exitCode = 1;
+      }
+    }
+  });
+
+await program.parseAsync();
