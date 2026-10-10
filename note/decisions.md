@@ -42,3 +42,4 @@
 | 35 | 2026-10-10 | M0 依赖：typescript、vitest、zod、commander、playwright（加 @types/node）；MCP SDK 留到 `v1-protocol` 再问 | 用户（选了推荐项） | PR #4 审查指出：技术选型时这几个包只写成了「默认」，没有按 AGENTS.md「加依赖先问」走，这里补上 |
 | 36 | 2026-10-10 | 审查满 2 轮后，PR #4（设计 + `v1-foundation` 规格）由用户决定合并 | 用户 | 两轮共 13 处问题已全部修完；第 2 轮剩下的 3 处是措辞上的歧义，Claude 修完并逐一核对 |
 | 37 | 2026-10-11 | 派活给 Codex 改用独立 clone（不用 linked worktree），后台运行加 `< /dev/null`；每完成一个里程碑就交接、开新对话 | Claude（流程决定）+ 用户（开新对话） | issue A 实测：worktree 的 git 元数据在沙箱外，Codex 无法提交；不关标准输入会卡死；对话上下文约 49 万 token，额度消耗过快 |
+| 38 | 2026-10-11 | PR #7（交接 + dispatch 流程修正）审查满 2 轮后，由用户批准在 CI 变绿后合并，交给新对话执行 | 用户 | 最后剩下的一处是占位符改名，Claude 修完并用 grep 核对；避免在高消耗的对话里干等 CI |
