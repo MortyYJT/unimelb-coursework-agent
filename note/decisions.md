@@ -39,3 +39,4 @@
 | 32 | 2026-10-10 | 路线图批准：只排顺序（M0 基建 → M1 取数与同步 → M2 协议 → M3 界面 → M4 主动循环与集成），不给里程碑配工期；第一版整体目标 10/15 代码完成；考前复习留在第二版 | 用户 | 用户判断速度够（「5 天之内可以搞定」）。Claude 的评估：纯代码部分 5 天可行（三条线并行）；Canvas/Ed 取数和外部配置是风险项，单独标出，不阻塞其他线 |
 | 33 | 2026-10-10 | 批准 OpenSpec change `v1-foundation`（M0：domain-model、local-store、agent-envelope、page-capture；issue A 先做，B/C/D 并行） | 用户 | 关口 1；设计 PR #4 依 #12 可在记录后合并 |
 | 34 | 2026-10-10 | `projectGrade()` 的函数体由用户亲手写（Codex 只写测试和抛错的空函数，留 `TODO(human)`） | 用户（选了推荐项） | 面试时能说清楚自己写的核心业务逻辑；纯函数、有现成测试，不阻塞其他线 |
+| 35 | 2026-10-10 | M0 依赖：typescript、vitest、zod、commander、playwright（加 @types/node）；MCP SDK 留到 `v1-protocol` 再问 | 用户（选了推荐项） | PR #4 审查指出：技术选型时这几个包只写成了「默认」，没有按 AGENTS.md「加依赖先问」走，这里补上 |

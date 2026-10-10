@@ -24,7 +24,7 @@ Version 1 is built on three parallel tracks (sync core, agent protocol, UI), and
 
 ## Impact
 
-- New dependencies (approved in decisions #17, #18, #30): `typescript`, `vitest`, `zod`, `commander`, `playwright`; `@types/node`. MCP SDK is deferred to `v1-protocol`.
+- New dependencies (decision #35): `typescript`, `vitest`, `zod`, `commander`, `playwright`, `@types/node`. MCP SDK is deferred to `v1-protocol`.
 - New directories: `src/`, `test/`, `.github/workflows/`; `.local/` stays git-ignored and holds the database, snapshots, and browser profile.
 - `.claude/check.sh` stops being a no-op, so the Stop hook starts enforcing checks.
 - No network calls except the user-driven capture browser; no model calls anywhere.

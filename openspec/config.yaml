@@ -11,7 +11,8 @@ context: |
   Stack: Node 24 LTS, TypeScript (strict), node:sqlite behind a repository interface, zod,
   commander, Playwright, Vitest, React + Vite for `coursework ui`. npm.
   Red lines: no self-issued Canvas tokens; models never see or type passwords; strip
-  classmates' personal data before storage (configurable, on by default); course data, iCal
+  classmates' personal data before parsed data is stored or reaches a model (configurable, on
+  by default; raw page captures stay unparsed in `.local/`); course data, iCal
   URLs, browser profiles, and tokens live only in `.local/` and never in the repo or fixtures;
   test fixtures are synthetic; no auto-submission (no L4); metrics must be real.
 
