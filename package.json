@@ -19,6 +19,7 @@
     "coursework": "dist/cli.js"
   },
   "scripts": {
-    "build": "tsc --noEmit false --outDir dist --rootDir src --module NodeNext --moduleResolution NodeNext --target ES2024 --strict --skipLibCheck src/cli.ts"
+    "build": "tsc --noEmit false --outDir dist --rootDir src --module NodeNext --moduleResolution NodeNext --target ES2024 --strict --skipLibCheck src/cli.ts",
+    "check": "tsc --noEmit && vitest run"
   }
 }
