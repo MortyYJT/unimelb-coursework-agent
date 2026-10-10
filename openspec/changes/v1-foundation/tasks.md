@@ -33,7 +33,7 @@ Issue mapping for dispatch: groups 1–2 are issue A (blocks the rest); groups 3
 ## 5. Page capture (issue D)
 
 - [ ] 5.1 Install `playwright`; `src/capture/lock.ts`: lock file `<data dir>/profiles/default.lock` created with `wx`, pid holder, stale-lock cleanup, throws `CourseworkError(LOCKED)`; `capture` exits with status 3 on a held lock; tests for both lock scenarios
-- [ ] 5.2 `src/capture/snapshot.ts`: write `page.html`, `page.png`, `meta.json` under `.local/snapshots/<host>/<timestamp>-<slug>/`; strip query and fragment from the URL; unit-test the path and URL logic without a browser
-- [ ] 5.3 `coursework capture`: persistent context on `.local/profiles/default` with `channel: 'chrome'`, fallback to bundled Chromium only after asking; terminal commands `s` (save active tab) and `q` (quit); never touch form fields
+- [ ] 5.2 `src/capture/snapshot.ts`: write `page.html`, `page.png`, `meta.json` under `<data dir>/snapshots/<host>/<timestamp>-<slug>/` (data directory from task 3.4, honouring `COURSEWORK_HOME`); strip query and fragment from the URL; unit-test the path and URL logic without a browser
+- [ ] 5.3 `coursework capture`: persistent context on `<data dir>/profiles/default` with `channel: 'chrome'`, fallback to bundled Chromium only after asking; terminal commands `s` (save active tab) and `q` (quit); never touch form fields
 - [ ] 5.4 Guard test: `git check-ignore` succeeds for `.local/snapshots/` and `.local/profiles/`
 - [ ] 5.5 Manual run by the user (not automatable): sign in to Canvas and Ed, save assignment, announcement, grades, and Ed lesson pages for each course; note in the PR how long the session lasted and whether MFA was asked
