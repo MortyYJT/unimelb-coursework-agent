@@ -2,13 +2,10 @@ import { closeSync, openSync, readFileSync, statSync, unlinkSync, writeFileSync 
 import { join } from 'node:path';
 import { profilesDir } from '../config/data-dir.js';
 
-// Temporary bridge until issue C supplies CourseworkError.
-export class ProfileLockedError extends Error {
-  readonly code = 'LOCKED';
-  constructor(holder: string) {
-    super(`Browser profile is locked by process ${holder || 'unknown'}.`);
-    this.name = 'ProfileLockedError';
-  }
+import { CourseworkError } from '../protocol/errors.js';
+
+function locked(holder: string): CourseworkError {
+  return new CourseworkError('LOCKED', `Browser profile is locked by process ${holder || 'unknown'}.`);
 }
 
 function code(error: unknown): string | undefined {
@@ -26,8 +23,19 @@ export function acquireProfileLock(): () => void {
       let identity: ReturnType<typeof statSync>;
       try { identity = statSync(path); holder = readFileSync(path, 'utf8'); }
       catch (readError) { if (code(readError) === 'ENOENT') continue; throw readError; }
+      if (holder === '' && Date.now() - identity.mtimeMs > 10_000) {
+        // Recheck identity, content and age before reclaiming an interrupted write.
+        try {
+          const current = statSync(path);
+          if (current.ino === identity.ino && current.dev === identity.dev
+            && Date.now() - current.mtimeMs > 10_000 && readFileSync(path, 'utf8') === '') {
+            unlinkSync(path);
+          }
+        } catch (removeError) { if (code(removeError) !== 'ENOENT') throw removeError; }
+        continue;
+      }
       const pid = Number(holder);
-      if (!/^\d+$/.test(holder) || !Number.isSafeInteger(pid) || pid <= 0) throw new ProfileLockedError(holder);
+      if (!/^\d+$/.test(holder) || !Number.isSafeInteger(pid) || pid <= 0) throw locked(holder);
       try { process.kill(pid, 0); }
       catch (probeError) {
         if (code(probeError) === 'ESRCH') {
@@ -40,7 +48,7 @@ export function acquireProfileLock(): () => void {
         }
         if (code(probeError) !== 'EPERM') throw probeError;
       }
-      throw new ProfileLockedError(holder);
+      throw locked(holder);
     }
     try { writeFileSync(descriptor, String(process.pid)); }
     catch (error) { closeSync(descriptor); unlinkSync(path); throw error; }
