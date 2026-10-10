@@ -14,5 +14,11 @@
   "dependencies": {
     "commander": "^15.0.0",
     "zod": "^4.6.5"
+  },
+  "bin": {
+    "coursework": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc --noEmit false --outDir dist --rootDir src --module NodeNext --moduleResolution NodeNext --target ES2024 --strict --skipLibCheck src/cli.ts"
   }
 }
