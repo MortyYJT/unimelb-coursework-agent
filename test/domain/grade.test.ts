@@ -1,12 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { projectGrade } from '../../src/domain/grade.js';
-import type { Assessment, Course } from '../../src/domain/schemas.js';
-
-const course: Course = { id: 'course-1', moduleId: 'module-1', code: 'COMP90099', name: 'Fictional computing', term: '2026-S1', assessmentsComplete: true };
-function item(id: string, weight: number, score?: number, isFinal = false, hurdleMin?: number): Assessment {
-  return { id, courseId: course.id, name: `Fictional ${id}`, kind: isFinal ? 'exam' : 'assignment', weight, score, isFinal, hurdleMin, status: score === undefined ? 'not_started' : 'graded' };
-}
-const assessments = [item('a', 10, 82), item('b', 15, 88), item('c', 10, 74), item('d', 25), item('final', 40, undefined, true)];
+import { syntheticCourse as course, syntheticAssessment as item, syntheticAssessments as assessments } from '../fixtures/synthetic.js';
 
 it('leaves grade projection for the human to implement', () => {
   expect(() => projectGrade(course, assessments, 'H1')).toThrow('TODO(human)');
