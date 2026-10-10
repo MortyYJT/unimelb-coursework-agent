@@ -12,11 +12,29 @@ Every agent-facing command SHALL return exactly one JSON envelope: `{ "protocol"
 - **THEN** the envelope has `ok: false`, an `error` with a known code, and no `data` field
 
 ### Requirement: Closed set of error codes
-Error codes SHALL be one of `INVALID_INPUT`, `NOT_FOUND`, `CONFLICT`, `AUTH_EXPIRED`, `SOURCE_UNAVAILABLE`, `LOCKED`, `CITATION_MISMATCH`, `LIMIT_EXCEEDED`, `INTERNAL`. Each code SHALL have a fixed `retryable` value, and `AUTH_EXPIRED` SHALL carry a `next` hint telling the caller to ask the user to sign in, never to sign in itself.
+Error codes and their fixed `retryable` values SHALL be:
+
+| code | retryable | meaning |
+| --- | --- | --- |
+| `INVALID_INPUT` | false | input failed schema validation |
+| `NOT_FOUND` | false | the referenced entity does not exist |
+| `CONFLICT` | true | the state changed underneath the caller; re-read and retry |
+| `AUTH_EXPIRED` | false | the user must sign in again |
+| `SOURCE_UNAVAILABLE` | true | a source could not be reached |
+| `LOCKED` | true | another process holds a needed lock |
+| `CITATION_MISMATCH` | false | a quote is not found verbatim in its source |
+| `LIMIT_EXCEEDED` | false | the result exceeds a size bound; narrow the request |
+| `INTERNAL` | false | an unexpected error |
+
+Code SHALL signal a known failure by throwing a typed `CourseworkError` carrying a code, a message, and an optional `next` hint; `run()` maps it to the envelope. `AUTH_EXPIRED` SHALL carry a `next` hint telling the caller to ask the user to sign in, never to sign in itself.
 
 #### Scenario: Unknown code
 - **WHEN** code tries to build an error envelope with a code outside the set
 - **THEN** the TypeScript build fails
+
+#### Scenario: Typed error is mapped
+- **WHEN** a command throws `CourseworkError` with code `NOT_FOUND`
+- **THEN** the envelope has `ok: false`, code `NOT_FOUND`, and `retryable: false`
 
 #### Scenario: Expired login
 - **WHEN** an `AUTH_EXPIRED` envelope is built

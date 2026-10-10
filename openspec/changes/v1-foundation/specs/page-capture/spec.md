@@ -19,11 +19,11 @@ While capture runs, the user SHALL be able to save the current page with a termi
 - **THEN** a test confirms git ignores `.local/snapshots/`
 
 ### Requirement: One process per browser profile
-Capture SHALL hold an exclusive lock on the profile directory while running. A second process using the same profile MUST fail fast with a `LOCKED` error naming the holder's process id. A lock left by a dead process SHALL be cleared automatically.
+Capture SHALL hold an exclusive lock file at `<data dir>/profiles/default.lock` containing its process id while running, and remove it on exit. `capture` is a human-facing command, not an agent command: a second process using the same profile MUST exit with status 3 and print that the profile is locked by the named process id. The lock module SHALL throw `CourseworkError` with code `LOCKED`, so agent-facing commands that need the profile later get a `LOCKED` envelope. A lock left by a dead process SHALL be cleared automatically.
 
 #### Scenario: Second capture
 - **WHEN** a capture is running and the user starts another
-- **THEN** the second exits with `LOCKED` and the first keeps running
+- **THEN** the second exits with status 3 naming the holder's process id, and the first keeps running
 
 #### Scenario: Stale lock
 - **WHEN** the lock file names a process id that no longer exists

@@ -36,7 +36,7 @@ Alternative considered: a monorepo with packages per track. Rejected: three trac
 Types are `z.infer<typeof Schema>`, never hand-written interfaces. The protocol (M2) will reuse the same schemas for input validation, and the MCP transport can derive JSON Schema from them. Alternative: TypeScript interfaces plus a separate validator. Rejected: two definitions drift.
 
 ### Synchronous `node:sqlite` behind a small repository
-`DatabaseSync` is synchronous, which keeps the repository simple and makes batch writes atomic with one `BEGIN … COMMIT`. Each entity has a table with typed columns for fields we query on and a `json` column for the rest, validated by zod on the way in and out. Alternative: an ORM (Drizzle, Prisma). Rejected for M0: a dependency and a code generator for six tables; the repository interface keeps the door open (decision #20).
+`DatabaseSync` is synchronous, which keeps the repository simple and makes batch writes atomic with one `BEGIN … COMMIT`. Each entity has a table with typed columns for fields we query on and a `json` column for the rest, validated by zod on the way in and out. Alternative: an ORM (Drizzle, Prisma). Rejected for M0: a dependency and a code generator for seven tables; the repository interface keeps the door open (decision #20).
 
 ### Migrations as ordered TypeScript modules
 `src/store/migrations/NNN-name.ts`, each exporting `up(db)`. The applied version lives in `PRAGMA user_version`. A database with a higher version than the code knows is refused untouched.
