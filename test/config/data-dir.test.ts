@@ -28,3 +28,8 @@ it('creates database parent, snapshots and profiles inside the override', () => 
   expect(existsSync(snapshotsDir())).toBe(true);
   expect(existsSync(profilesDir())).toBe(true);
 });
+
+it.each(['', '   ', '\t\n'])('treats blank COURSEWORK_HOME %j as unset', (home) => {
+  vi.stubEnv('COURSEWORK_HOME', home);
+  expect(dataDir()).toBe(join(packageRoot(), '.local'));
+});

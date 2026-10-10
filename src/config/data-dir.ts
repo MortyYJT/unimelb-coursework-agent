@@ -16,8 +16,8 @@ export function packageRoot(): string {
 }
 
 export function dataDir(): string {
-  const directory = process.env.COURSEWORK_HOME === undefined
-    ? join(packageRoot(), '.local') : resolve(process.env.COURSEWORK_HOME);
+  const home = process.env.COURSEWORK_HOME;
+  const directory = home?.trim() ? resolve(home) : join(packageRoot(), '.local');
   mkdirSync(directory, { recursive: true, mode: 0o700 });
   return directory;
 }
