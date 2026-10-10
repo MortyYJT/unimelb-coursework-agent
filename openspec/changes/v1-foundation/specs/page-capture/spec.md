@@ -1,14 +1,14 @@
 ## ADDED Requirements
 
 ### Requirement: User-driven capture in a headed browser
-`coursework capture` SHALL open a visible Playwright browser on the persistent profile at `.local/profiles/default`. The user SHALL sign in and navigate by hand. The tool MUST NOT read, type, store, or log passwords or one-time codes.
+`coursework capture` SHALL open a visible Playwright browser on the persistent profile at `<data dir>/profiles/default` (data directory as defined in `local-store`). The user SHALL sign in and navigate by hand. The tool MUST NOT read, type, store, or log passwords or one-time codes.
 
 #### Scenario: Start capture
 - **WHEN** the user runs `coursework capture`
 - **THEN** a visible browser opens on the persistent profile and the terminal explains how to save a page
 
 ### Requirement: Save the current page as a snapshot
-While capture runs, the user SHALL be able to save the current page with a terminal command. Each snapshot SHALL be written under `.local/snapshots/<host>/<timestamp>-<slug>/` with the rendered HTML, a full-page screenshot, and a `meta.json` holding the URL, title, capture time, and viewport. The URL in `meta.json` MUST have query strings and fragments removed.
+While capture runs, the user SHALL be able to save the current page with a terminal command. Each snapshot SHALL be written under `<data dir>/snapshots/<host>/<timestamp>-<slug>/` with the rendered HTML, a full-page screenshot, and a `meta.json` holding the URL, title, capture time, and viewport. The URL in `meta.json` MUST have query strings and fragments removed.
 
 #### Scenario: Save a page
 - **WHEN** the user saves a Canvas assignment page

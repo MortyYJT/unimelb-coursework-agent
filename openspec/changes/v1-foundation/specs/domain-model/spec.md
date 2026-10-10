@@ -55,7 +55,7 @@ An Assessment SHALL belong to a Course and carry a kind (`ongoing`, `assignment`
 
 ### Requirement: Grade projection
 The system SHALL compute, for a course: the graded weight, earned points, the current average over graded items, and the final-exam score needed to reach a target band. Ungraded non-final items SHALL be assumed to score the current average. Bands are H1 80, H2A 75, H2B 70, H3 65, P 50.
-The result's `need` SHALL be one of: `{ status: "score", value, setByHurdle }`, `{ status: "unreachable" }`, `{ status: "secured" }`, or `{ status: "unavailable", reason }` with reason `nothing_graded`, `no_final`, or `final_graded`. Order of evaluation: compute the raw need; if it is above 100 the status is `unreachable`; otherwise, if the final has `hurdleMin`, the value is `max(raw, hurdleMin)` and `setByHurdle` is true when the floor won (this applies even when raw ≤ 0); otherwise raw ≤ 0 is `secured`. Values are not rounded; tests compare to one decimal place.
+The result's `need` SHALL be one of: `{ status: "score", value, setByHurdle }`, `{ status: "unreachable" }`, `{ status: "secured" }`, or `{ status: "unavailable", reason }` with reason `nothing_graded`, `no_final`, or `final_graded`. Order of evaluation: first the `unavailable` checks in this order, the first match wins: `nothing_graded`, then `no_final`, then `final_graded`; then compute the raw need; if it is above 100 the status is `unreachable`; otherwise, if the final has `hurdleMin`, the value is `max(raw, hurdleMin)` and `setByHurdle` is true when the floor won (this applies even when raw ≤ 0); otherwise raw ≤ 0 is `secured`. Values are not rounded; tests compare to one decimal place.
 
 #### Scenario: Needed final score
 - **WHEN** graded items are 10% at 82, 15% at 88, and 10% at 74, an ungraded 25% assignment exists, the final is 40%, and the target is H1
@@ -93,8 +93,12 @@ A Task SHALL belong to a Module, optionally to a Course and an Assessment, and S
 - **THEN** validation fails
 
 ### Requirement: Changes and runs are recorded
-A Change SHALL record its kind (`item.added`, `item.removed`, `content.changed`, `deadline.changed`, `grade.changed`), the affected entity, and the before and after values where relevant. Its `seq` is assigned by the store (see `local-store`). A Run SHALL record the command, start and end time, step count, outcome, and an optional cost reported by the caller.
+A Change SHALL record its kind (`item.added`, `item.removed`, `content.changed`, `deadline.changed`, `grade.changed`) and the affected entity. `item.added` MUST have `after` and no `before`; `item.removed` MUST have `before` and no `after`; every `*.changed` kind MUST have both. Its `seq` is assigned by the store (see `local-store`). A Run SHALL record the command, start and end time, step count, outcome, and an optional cost reported by the caller.
 
 #### Scenario: Change without before or after
-- **WHEN** a `deadline.changed` change has neither `before` nor `after`
+- **WHEN** a `deadline.changed` change lacks `before`, or an `item.added` change has a `before`
 - **THEN** validation fails
+
+#### Scenario: Several unavailable reasons
+- **WHEN** a course has nothing graded and no final
+- **THEN** the need is `unavailable` with reason `nothing_graded`
