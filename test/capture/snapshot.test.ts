@@ -38,3 +38,34 @@ it('saves a page as HTML, screenshot and metadata without overwriting another sn
   expect(second).not.toBe(path);
   expect(readdirSync(path)).toHaveLength(3);
 });
+
+it.each(['content', 'screenshot'])('rejects navigation during %s before writing metadata', async (step) => {
+  let url = 'https://canvas.example.test/assignments/42?before=yes';
+  const navigate = () => { url = 'https://canvas.example.test/assignments/99?after=yes'; };
+  const page = {
+    url: () => url,
+    title: async () => 'Assignment One',
+    content: async () => { if (step === 'content') navigate(); return '<html>synthetic</html>'; },
+    screenshot: async () => { if (step === 'screenshot') navigate(); return Buffer.from('synthetic-png'); },
+    viewportSize: () => null,
+  };
+  await expect(saveSnapshot(page)).rejects.toThrow('URL changed');
+  expect(readdirSync(join(home, 'snapshots'), { recursive: true }))
+    .not.toContainEqual(expect.stringContaining('meta.json'));
+});
+it('accepts navigation that only changes stripped URL components', async () => {
+  let url = 'https://canvas.example.test/assignments/42?before=yes#one';
+  const page = {
+    url: () => url,
+    title: async () => 'Assignment One',
+    content: async () => '<html>synthetic</html>',
+    screenshot: async () => {
+      url = 'https://user:secret@canvas.example.test/assignments/42?after=yes#two';
+      return Buffer.from('synthetic-png');
+    },
+    viewportSize: () => null,
+  };
+  const path = await saveSnapshot(page);
+  expect(JSON.parse(readFileSync(join(path, 'meta.json'), 'utf8')).url)
+    .toBe('https://canvas.example.test/assignments/42');
+});
