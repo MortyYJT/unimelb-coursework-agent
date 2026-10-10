@@ -19,7 +19,7 @@
     "coursework": "dist/cli.js"
   },
   "scripts": {
-    "build": "tsc --ignoreConfig --noEmit false --outDir dist --rootDir src --module NodeNext --moduleResolution NodeNext --target ES2024 --strict --types node --skipLibCheck src/cli.ts src/domain/*.ts",
+    "build": "tsc -p tsconfig.build.json",
     "check": "tsc --noEmit && vitest run"
   }
 }
