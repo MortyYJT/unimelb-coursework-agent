@@ -1,5 +1,20 @@
 schema: spec-driven
 
+context: |
+  Product: `coursework`, a local-first action center for a University of Melbourne student.
+  Coursework from Canvas, Ed, and iCal is ingested automatically; other modules (internship,
+  gaming, ...) hold manual and recurring tasks. Value: automatic, trustworthy (every derived
+  step cites verbatim source text), and schedulable. See note/product/vision.md.
+  Architecture: a deterministic TypeScript core plus an agent protocol (CLI and MCP share one
+  definition). External agents (Hermes, Claude Code) do all reasoning; our code never calls a
+  model. Agent writes pass a validation gate (zod + verbatim citation check) before storage.
+  Stack: Node 24 LTS, TypeScript (strict), node:sqlite behind a repository interface, zod,
+  commander, Playwright, Vitest, React + Vite for `coursework ui`. npm.
+  Red lines: no self-issued Canvas tokens; models never see or type passwords; strip
+  classmates' personal data before storage (configurable, on by default); course data, iCal
+  URLs, browser profiles, and tokens live only in `.local/` and never in the repo or fixtures;
+  test fixtures are synthetic; no auto-submission (no L4); metrics must be real.
+
 # Project context (optional)
 # This is shown to AI when creating artifacts.
 # Add your tech stack, conventions, style guides, domain knowledge, etc.
