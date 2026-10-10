@@ -108,7 +108,7 @@
   .ev span.t { overflow: hidden; text-overflow: ellipsis; }
   .ev.due { background: var(--ink); color: var(--on-ink); font-weight: 600; }
   .ev.block { border-color: var(--line); background: var(--panel); }
-  .ev.budget { border: 1px dashed var(--faint); color: var(--muted); }
+  .ev.rep { border: 1px dashed var(--faint); color: var(--muted); }
   .more { font-size: 11px; color: var(--muted); padding-left: 6px; }
 
   /* ---------- Week ---------- */
@@ -252,6 +252,9 @@
   .nc a:hover { border-color: var(--ink); }
   .mini { height: 3px; background: var(--line); border-radius: 9px; overflow: hidden; }
   .mini i { display: block; height: 100%; background: var(--ink); width: 0; transition: width .8s var(--ease); }
+  .replist { display: grid; gap: 2px; }
+  .repitem { display: grid; grid-template-columns: 22px 1fr auto; gap: 10px; align-items: center; padding: 8px 4px; border-top: 1px solid var(--line); cursor: pointer; }
+  .repitem:has(.chk:checked) span:nth-of-type(1) { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--faint); }
   .tasklist button { width: 100%; display: grid; grid-template-columns: 1fr 120px; gap: 12px; align-items: center; text-align: left;
     border: 0; border-top: 1px solid var(--line); background: none; padding: 10px 4px; transition: background .2s; }
   .tasklist button:hover { background: var(--hover); }
@@ -347,7 +350,7 @@ const STR = {
     accuracy: "抽取准确率", overrun: "实际比预计多", estVsAct: "预计 vs 实际", est: "预计", act: "实际", syncLog: "同步记录",
     when: "时间", dur: "耗时", cost: "成本", result: "结果", ok: "成功", fail: "失败", addModule: "新建模块", name: "名称",
     mode: "进度算法", weeklyBudget: "每周预算（小时）", more: "更多", teachingWeeks: "教学周设置", manageModules: "模块管理",
-    hours: "小时", labelsN: "条标注", wkCol: "周次", phTask: "例如：准备小组会议", phModule: "例如：健身", home: "主页", courses: "课程", assessments: "考核项", byWeek: "按周", kindQuiz: "平时", kindWork: "作业", kindExam: "考试", weight: "权重", score: "分数", stateCol: "状态", graded: "已评分", pending: "未开始", inprog: "进行中", submitted: "已提交", currentAvg: "当前平均", earned: "已拿到", needFinal: "期末需要", target: "目标", unreachable: "已无法达到", safe: "已稳", assumeNote: "假设其余未评分的非期末项按当前平均水平计。数字为示例。", tasks: "任务", notionRO: "Notion 只读 · 上次同步 09:12", openNotion: "在 Notion 打开 ↗", pages: "页", edited: "编辑于", checked: "已勾选", usedThisWeek: "本周已用", budgetLeft: "剩余预算", nextDue: "下一个截止", none: "无" },
+    hours: "小时", labelsN: "条标注", wkCol: "周次", phTask: "例如：准备小组会议", phModule: "例如：健身", home: "主页", courses: "课程", assessments: "考核项", byWeek: "按周", kindQuiz: "平时", kindWork: "作业", kindExam: "考试", weight: "权重", score: "分数", stateCol: "状态", graded: "已评分", pending: "未开始", inprog: "进行中", submitted: "已提交", currentAvg: "当前平均", earned: "已拿到", needFinal: "期末需要", target: "目标", unreachable: "已无法达到", safe: "已稳", assumeNote: "假设其余未评分的非期末项按当前平均水平计。数字为示例。", tasks: "任务", notionRO: "Notion 只读 · 上次同步 09:12", openNotion: "在 Notion 打开 ↗", pages: "页", edited: "编辑于", checked: "已勾选", usedThisWeek: "本周已用", budgetLeft: "剩余预算", nextDue: "下一个截止", none: "无", recurring: "重复任务", repeat: "重复", repNone: "不重复", repDaily: "每天", repWeekly: "每周", dailyN: "每日 {n} 项" },
   en: { month: "Month", week: "Week", add: "New task", modules: "Modules", upcoming: "Upcoming", status: "Status", metrics: "Metrics", settings: "Settings",
     edExpiredShort: "Ed expired", whoSub: "Sample data · synced 09:12", teachWeek: "Teaching week", brk: "Break", due: "Due",
     delivery: "Delivery", budget: "Time budget", steps: "steps", thisWeek: "this week", close: "Close", source: "Source", manual: "Manual",
@@ -358,7 +361,7 @@ const STR = {
     accuracy: "Extraction accuracy", overrun: "Actual over estimate", estVsAct: "Estimate vs actual", est: "Estimate", act: "Actual", syncLog: "Sync log",
     when: "When", dur: "Duration", cost: "Cost", result: "Result", ok: "OK", fail: "Failed", addModule: "New module", name: "Name",
     mode: "Progress mode", weeklyBudget: "Weekly budget (h)", more: "more", teachingWeeks: "Teaching weeks", manageModules: "Modules",
-    hours: "h", labelsN: "labels", wkCol: "Wk", phTask: "e.g. Prepare group meeting", phModule: "e.g. Fitness", home: "Home", courses: "Courses", assessments: "Assessments", byWeek: "By week", kindQuiz: "Ongoing", kindWork: "Assignment", kindExam: "Exam", weight: "Weight", score: "Score", stateCol: "Status", graded: "Graded", pending: "Not started", inprog: "In progress", submitted: "Submitted", currentAvg: "Current average", earned: "Earned", needFinal: "Needed on final", target: "Target", unreachable: "Out of reach", safe: "Secured", assumeNote: "Assumes ungraded non-final items match your current average. Sample numbers.", tasks: "Tasks", notionRO: "Notion read-only · synced 09:12", openNotion: "Open in Notion ↗", pages: "pages", edited: "edited", checked: "checked", usedThisWeek: "Used this week", budgetLeft: "Budget left", nextDue: "Next due", none: "None" },
+    hours: "h", labelsN: "labels", wkCol: "Wk", phTask: "e.g. Prepare group meeting", phModule: "e.g. Fitness", home: "Home", courses: "Courses", assessments: "Assessments", byWeek: "By week", kindQuiz: "Ongoing", kindWork: "Assignment", kindExam: "Exam", weight: "Weight", score: "Score", stateCol: "Status", graded: "Graded", pending: "Not started", inprog: "In progress", submitted: "Submitted", currentAvg: "Current average", earned: "Earned", needFinal: "Needed on final", target: "Target", unreachable: "Out of reach", safe: "Secured", assumeNote: "Assumes ungraded non-final items match your current average. Sample numbers.", tasks: "Tasks", notionRO: "Notion read-only · synced 09:12", openNotion: "Open in Notion ↗", pages: "pages", edited: "edited", checked: "checked", usedThisWeek: "Used this week", budgetLeft: "Budget left", nextDue: "Next due", none: "None", recurring: "Recurring", repeat: "Repeat", repNone: "None", repDaily: "Daily", repWeekly: "Weekly", dailyN: "{n} dailies" },
 };
 const MONTHS_EN = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const DOW = { zh: ["一","二","三","四","五","六","日"], en: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"] };
@@ -378,11 +381,12 @@ const t = (k) => STR[settings.lang][k] ?? k;
 const TODAY = new Date(2026, 9, 12);
 const D = (m, d, h = 23, mi = 59) => new Date(2026, m - 1, d, h, mi);
 
-// Module.mode: "delivery" -> progress = done steps / all steps; "budget" -> progress = hours used / weekly budget.
+// Every module is delivery-type: progress = done steps / all steps (decision #31 dropped time budgets).
+// Task.repeat: "daily" | "weekly" marks a recurring task; `doneToday` tracks today's check-off.
 const modules = [
   { id: "school", name: "学校", nameEn: "School", glyph: "●", mode: "delivery", auto: true },
   { id: "intern", name: "找实习", nameEn: "Internship", glyph: "◆", mode: "delivery" },
-  { id: "game", name: "游戏", nameEn: "Gaming", glyph: "▲", mode: "budget", budgetH: 6, usedH: 3.5 },
+  { id: "game", name: "游戏", nameEn: "Gaming", glyph: "▲", mode: "delivery" },
 ];
 
 const tasks = [
@@ -409,14 +413,21 @@ const tasks = [
     steps: [ { t: "更新简历项目二描述", est: 60, done: true }, { t: "投递 3 家", est: 90, done: true }, { t: "再投 2 家并记录", est: 60, done: false } ] },
   { id: "sd", mod: "intern", title: "系统设计模拟面试", due: D(10, 21, 19, 0), src: "manual",
     steps: [ { t: "复习两道系统设计题", est: 90, done: false }, { t: "和朋友模拟 45 分钟", est: 45, done: false } ] },
+  { id: "g1", mod: "game", title: "原神 · 每日委托", repeat: "daily", src: "manual", steps: [ { t: "每日委托", est: 15, done: true } ] },
+  { id: "g2", mod: "game", title: "星穹铁道 · 每日实训", repeat: "daily", src: "manual", steps: [ { t: "每日实训", est: 15, done: false } ] },
+  { id: "g3", mod: "game", title: "绝区零 · 每日活跃", repeat: "daily", src: "manual", steps: [ { t: "每日活跃", est: 10, done: false } ] },
+  { id: "g4", mod: "game", title: "星穹铁道 · 版本活动", due: D(10, 20, 4, 0), src: "manual",
+    steps: [ { t: "活动第一阶段", est: 40, done: true }, { t: "活动第二阶段", est: 40, done: false }, { t: "领取全部奖励", est: 10, done: false } ] },
+  { id: "g5", mod: "game", title: "原神 · 版本主线", due: D(10, 28, 23, 59), src: "manual",
+    steps: [ { t: "主线第一幕", est: 60, done: false }, { t: "主线第二幕", est: 60, done: false } ] },
 ];
 
 const blocks = [
   { m: 10, d: 12, t: "10:00 Proposal", mod: "school" }, { m: 10, d: 12, t: "14:00 A2 预订逻辑", mod: "school" },
   { m: 10, d: 13, t: "09:00 Proposal 成稿", mod: "school" }, { m: 10, d: 13, t: "20:00 投递 2 家", mod: "intern" },
-  { m: 10, d: 14, t: "10:00 A2 设计说明", mod: "school" }, { m: 10, d: 14, t: "21:00 游戏 1.5h", mod: "game" },
+  { m: 10, d: 14, t: "10:00 A2 设计说明", mod: "school" },
   { m: 10, d: 15, t: "13:00 PS5 第 1–3 题", mod: "school" }, { m: 10, d: 16, t: "09:00 A2 最终检查", mod: "school" },
-  { m: 10, d: 17, t: "16:00 系统设计复习", mod: "intern" }, { m: 10, d: 17, t: "21:00 游戏 2h", mod: "game" },
+  { m: 10, d: 17, t: "16:00 系统设计复习", mod: "intern" }, { m: 10, d: 17, t: "20:00 版本活动第二阶段", mod: "game" },
   { m: 10, d: 18, t: "10:00 PS5 第 4 题", mod: "school" }, { m: 10, d: 20, t: "14:00 复习 Quiz 3", mod: "school" },
 ];
 
@@ -446,7 +457,6 @@ const notionSections = [
   { n: "算法", en: "Algorithms", pages: 6, edited: "10/11", done: 63, total: 150 },
   { n: "反问", en: "Questions to ask", pages: 1, edited: "09/30", done: 6, total: 8 },
 ];
-const gameWeek = [0, 0, 1.5, 0, 0, 2, 0]; // hours per day, Mon..Sun
 
 const metrics = { estVsAct: [ ["A1 · 领域模型", 90, 130], ["Lab 4 · SQL", 60, 55], ["PS4 · 1–4 题", 180, 240], ["Proposal · 数据集", 45, 50] ],
   syncs: [ ["10/12 09:12", "3m41s", 27, "$0.04", true], ["10/12 03:12", "3m20s", 25, "$0.00", true], ["10/11 21:12", "—", 4, "$0.00", false] ] };
@@ -476,13 +486,16 @@ function teachingWeek(monday) {
 
 function eventsOn(date) {
   const out = [];
-  tasks.filter((tk) => same(tk.due, date)).forEach((tk) =>
+  const daily = tasks.filter((tk) => tk.repeat === "daily");
+  if (daily.length && date >= addDays(TODAY, -7) && date <= addDays(TODAY, 21))
+    out.push({ cls: "rep", g: "↻", text: `${t("dailyN").replace("{n}", daily.length)}`, mod: "game" });
+  tasks.filter((tk) => tk.due && same(tk.due, date)).forEach((tk) =>
     out.push({ cls: "due", g: modOf(tk.mod).glyph, text: `${t("due")} ${tk.course ? tk.course + " · " : ""}${tk.title}`, task: tk.id }));
   blocks.filter((b) => b.m === date.getMonth() + 1 && b.d === date.getDate() && date.getFullYear() === 2026).forEach((b) =>
-    out.push({ cls: modOf(b.mod).mode === "budget" ? "budget" : "block", g: modOf(b.mod).glyph, text: b.t }));
+    out.push({ cls: "block", g: modOf(b.mod).glyph, text: b.t }));
   return out;
 }
-const evHtml = (e) => `<button type="button" class="ev ${e.cls}" ${e.task ? `data-task="${e.task}"` : 'tabindex="-1"'} title="${esc(e.text)}"><span class="g">${e.g}</span><span class="t">${esc(e.text)}</span></button>`;
+const evHtml = (e) => `<button type="button" class="ev ${e.cls}" ${e.task ? `data-task="${e.task}"` : e.mod ? `data-mod="${e.mod}"` : 'tabindex="-1"'} title="${esc(e.text)}"><span class="g">${e.g}</span><span class="t">${esc(e.text)}</span></button>`;
 
 // ===================== Calendar =====================
 let view = "month";
@@ -544,18 +557,14 @@ function ring(p) {
 
 function renderRail() {
   $("#mods").innerHTML = modules.map((m) => {
-    if (m.mode === "budget") {
-      return `<button type="button" class="mod" data-mod="${m.id}">${ring(m.usedH / m.budgetH)}<div><b>${m.glyph} ${esc(modName(m))}<span class="go">→</span></b>
-        <small>${t("budget")} · ${t("thisWeek")} ${m.usedH} / ${m.budgetH} ${t("hours")}</small></div></button>`;
-    }
-    const all = tasks.filter((tk) => tk.mod === m.id).flatMap((tk) => tk.steps), done = all.filter((s) => s.done).length;
+    const all = tasks.filter((tk) => tk.mod === m.id && !tk.repeat).flatMap((tk) => tk.steps), done = all.filter((s) => s.done).length;
     const p = all.length ? done / all.length : 0;
     return `<button type="button" class="mod" data-mod="${m.id}">${ring(p)}<div><b>${m.glyph} ${esc(modName(m))}<span class="go">→</span></b>
       <small>${t("delivery")} · ${done}/${all.length} ${t("steps")} · ${Math.round(100 * p)}%</small></div></button>`;
   }).join("");
   requestAnimationFrame(() => requestAnimationFrame(() =>
     document.querySelectorAll("#mods .ring .fg").forEach((el) => (el.style.strokeDashoffset = el.dataset.target))));
-  const next = tasks.filter((tk) => tk.due >= TODAY).sort((a, b) => a.due - b.due).slice(0, 5);
+  const next = tasks.filter((tk) => tk.due && tk.due >= TODAY).sort((a, b) => a.due - b.due).slice(0, 5);
   $("#upc").innerHTML = next.map((tk) => `<div class="upc"><div class="d"><b>${tk.due.getDate()}</b>${settings.lang === "en" ? MONTHS_EN[tk.due.getMonth()].slice(0, 3) : tk.due.getMonth() + 1 + "月"}</div>
     <button type="button" data-task="${tk.id}"><div class="tt">${modOf(tk.mod).glyph} ${esc(tk.title)}</div>
     <div class="sub">${tk.course ? esc(tk.course) + " · " : ""}${hhmm(tk.due)} · ${Math.round(100 * taskProgress(tk))}%</div></button></div>`).join("");
@@ -603,7 +612,6 @@ function renderDetail() {
   if (page.kind === "course") return renderCourse(courses.find((c) => c.code === page.code));
   const m = modOf(page.id);
   if (m.id === "school") return renderSchool(m);
-  if (m.mode === "budget") return renderBudget(m);
   return renderDeliveryModule(m);
 }
 
@@ -647,7 +655,11 @@ function renderCourse(c) {
 }
 
 function renderDeliveryModule(m) {
-  const list = tasks.filter((tk) => tk.mod === m.id).sort((a, b) => a.due - b.due);
+  const reps = tasks.filter((tk) => tk.mod === m.id && tk.repeat);
+  const list = tasks.filter((tk) => tk.mod === m.id && !tk.repeat).sort((a, b) => a.due - b.due);
+  const repHtml = reps.length ? `<div class="sect" style="margin-top:0"><h3>↻ ${t("recurring")}</h3><div class="replist">${reps.map((tk) => `
+    <label class="repitem"><input class="chk" type="checkbox" ${tk.steps[0].done ? "checked" : ""} data-t="${tk.id}" data-s="0"><span>${esc(tk.title)}</span>
+      <span class="sub">${t(tk.repeat === "daily" ? "repDaily" : "repWeekly")}</span></label>`).join("")}</div></div>` : "";
   const items = list.map((tk) => `<button type="button" data-task="${tk.id}"><div><div class="tt">${esc(tk.title)}</div><div class="sub">${t("due")} ${fmtDate(tk.due)}</div></div>
     <div><div class="mini"><i data-w="${100 * taskProgress(tk)}"></i></div><div class="sub" style="margin-top:4px">${Math.round(100 * taskProgress(tk))}%</div></div></button>`).join("");
   const notion = m.id === "intern" ? `<div class="sect"><h3>Notion <span style="text-transform:none;letter-spacing:0;font-weight:400">· ${t("notionRO")}</span></h3><div class="notion">${notionSections.map((n, i) => `
@@ -656,25 +668,13 @@ function renderDeliveryModule(m) {
       <a href="https://www.notion.so/" target="_blank" rel="noopener noreferrer">${t("openNotion")}</a></div>`).join("")}</div></div>` : "";
   return `<div class="detail-page view">${crumbs([{ label: `${m.glyph} ${modName(m)}` }])}
     <div class="dh"><div><h2>${m.glyph} ${esc(modName(m))}</h2><p>${t("delivery")} · ${t("manual")}</p></div></div>
-    <div class="sect" style="margin-top:0"><h3>${t("tasks")}</h3><div class="tasklist">${items}</div></div>${notion}</div>`;
-}
-
-function renderBudget(m) {
-  const max = Math.max(...gameWeek, 1);
-  const cols = gameWeek.map((h, i) => `<div class="col"><div class="b ${h ? "" : "zero"}" data-h="${(100 * h) / max}"></div><span>${h ? h + "h" : ""}</span><span>${DOW[settings.lang][i]}</span></div>`).join("");
-  return `<div class="detail-page view">${crumbs([{ label: `${m.glyph} ${modName(m)}` }])}
-    <div class="dh"><div><h2>${m.glyph} ${esc(modName(m))}</h2><p>${t("budget")} · ${m.budgetH} ${t("hours")} / ${t("week")}</p></div></div>
-    <div class="stats"><div class="stat"><div class="v">${m.usedH}h</div><div class="l">${t("usedThisWeek")}</div></div>
-      <div class="stat"><div class="v">${m.budgetH - m.usedH}h</div><div class="l">${t("budgetLeft")}</div></div>
-      <div class="stat"><div class="v">${Math.round((100 * m.usedH) / m.budgetH)}%</div><div class="l">${t("budget")}</div></div></div>
-    <div class="daybars">${cols}</div></div>`;
+    ${repHtml}<div class="sect" ${reps.length ? "" : 'style="margin-top:0"'}><h3>${t("tasks")}</h3><div class="tasklist">${items}</div></div>${notion}</div>`;
 }
 
 function animateDetail() {
   requestAnimationFrame(() => requestAnimationFrame(() => {
     document.querySelectorAll("#cal .ring .fg").forEach((el) => (el.style.strokeDashoffset = el.dataset.target));
     document.querySelectorAll("#cal .mini i").forEach((el) => (el.style.width = el.dataset.w + "%"));
-    document.querySelectorAll("#cal .daybars .b:not(.zero)").forEach((el) => (el.style.height = el.dataset.h + "%"));
   }));
 }
 
@@ -684,7 +684,7 @@ function openDrawer(id) {
   $("#drawerBody").innerHTML = `
     <h2>${esc(tk.title)}</h2>
     <div class="meta"><span class="pill solid">${m.glyph} ${esc(modName(m))}</span>${tk.course ? `<span class="pill">${esc(tk.course)}</span>` : ""}
-      <span class="pill">${t("due")} ${tk.due.getMonth() + 1}/${tk.due.getDate()} ${hhmm(tk.due)}</span>
+      <span class="pill">${tk.repeat ? "↻ " + t(tk.repeat === "daily" ? "repDaily" : "repWeekly") : `${t("due")} ${tk.due.getMonth() + 1}/${tk.due.getDate()} ${hhmm(tk.due)}`}</span>
       <span class="pill">${t("source")} ${tk.src === "manual" ? t("manual") : esc(tk.src)}</span></div>
     <div class="bar"><i style="width:${p * 100}%"></i></div>
     ${tk.steps.map((s, i) => `<div class="step ${s.done ? "done" : ""}" style="--i:${i}">
@@ -704,6 +704,7 @@ function openAdd() {
       <label class="f">${t("module")}<select name="mod">${opts}</select></label>
       <label class="f">${t("dueDate")}<input name="due" type="date" value="2026-10-17" required></label>
       <label class="f">${t("estimate")}<input name="est" type="number" min="5" step="5" value="60"></label>
+      <label class="f">${t("repeat")}<select name="repeat"><option value="">${t("repNone")}</option><option value="daily">${t("repDaily")}</option><option value="weekly">${t("repWeekly")}</option></select></label>
       <div class="full" style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" type="button" data-close>${t("cancel")}</button>
         <button class="btn ink" type="submit">${t("create")}</button></div></form></div>`;
   showLayer("#modal", "#addForm input[name=title]");
@@ -746,10 +747,8 @@ function panelBody(tab) {
     <form class="grid" id="weekForm"><label class="f">${t("semStart")}<input type="date" name="semStart" value="${settings.semStart}"></label>
       <label class="f">${t("breakWeeks")}<input type="number" name="breakAfter" min="0" max="12" value="${settings.breakAfter}"></label></form>
     <h3 style="font-size:13px;margin:18px 0 8px">${t("manageModules")}</h3>
-    ${modules.map((m) => `<div class="row"><span>${m.glyph} ${esc(modName(m))}</span><span class="sub">${m.mode === "budget" ? `${t("budget")} · ${m.budgetH} ${t("hours")}` : t("delivery")}${m.auto ? " · Canvas / Ed" : ""}</span></div>`).join("")}
+    ${modules.map((m) => `<div class="row"><span>${m.glyph} ${esc(modName(m))}</span><span class="sub">${m.auto ? "Canvas / Ed / iCal" : t("manual")}</span></div>`).join("")}
     <form class="grid" id="modForm" style="margin-top:10px"><label class="f">${t("name")}<input name="name" required placeholder="${t("phModule")}"></label>
-      <label class="f">${t("mode")}<select name="mode"><option value="delivery">${t("delivery")}</option><option value="budget">${t("budget")}</option></select></label>
-      <label class="f">${t("weeklyBudget")}<input name="budget" type="number" min="1" value="4"></label>
       <div style="display:flex;align-items:end"><button class="btn" type="submit">＋ ${t("addModule")}</button></div></form>`;
 }
 
@@ -834,8 +833,8 @@ document.addEventListener("change", (e) => {
   const c = e.target.closest(".chk");
   if (c) {
     const tk = tasks.find((x) => x.id === c.dataset.t); tk.steps[+c.dataset.s].done = c.checked;
-    c.closest(".step").classList.toggle("done", c.checked);
-    $("#drawer .bar i").style.width = taskProgress(tk) * 100 + "%";
+    c.closest(".step")?.classList.toggle("done", c.checked);
+    if ($("#drawer").classList.contains("on")) $("#drawer .bar i").style.width = taskProgress(tk) * 100 + "%";
     renderRail(); return;
   }
   if (e.target.id === "upFile" && e.target.files[0]) {
@@ -868,12 +867,13 @@ document.addEventListener("submit", (e) => {
   const f = new FormData(e.target);
   if (e.target.id === "addForm") {
     const [y, m, d] = f.get("due").split("-").map(Number);
-    tasks.push({ id: "t" + Date.now(), mod: f.get("mod"), title: f.get("title"), due: new Date(y, m - 1, d, 23, 59), src: "manual",
+    const repeat = f.get("repeat") || undefined;
+    tasks.push({ id: "t" + Date.now(), mod: f.get("mod"), title: f.get("title"), due: repeat ? undefined : new Date(y, m - 1, d, 23, 59), repeat, src: "manual",
       steps: [{ t: f.get("title"), est: Number(f.get("est")) || 60, done: false }] });
     closeLayers(); renderCal(); renderRail();
   }
   if (e.target.id === "modForm") {
-    modules.push({ id: "m" + Date.now(), name: f.get("name"), glyph: "■", mode: f.get("mode"), budgetH: Number(f.get("budget")) || 4, usedH: 0 });
+    modules.push({ id: "m" + Date.now(), name: f.get("name"), glyph: "■", mode: "delivery" });
     renderRail(); openPanel("settings");
   }
 });
