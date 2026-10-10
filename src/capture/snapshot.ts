@@ -38,6 +38,7 @@ export async function saveSnapshot(page: SnapshotPage, time = new Date()): Promi
   }
   const html = await page.content();
   const png = await page.screenshot({ fullPage: true });
+  if (cleanUrl(page.url()) !== url) throw new Error('Page URL changed during capture. Save the page again.');
   const meta = { url, title, capturedAt: time.toISOString(), viewport: page.viewportSize() };
   await writeFile(join(directory, 'page.html'), html, { mode: 0o600 });
   await writeFile(join(directory, 'page.png'), png, { mode: 0o600 });
