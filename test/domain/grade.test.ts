@@ -19,6 +19,14 @@ describe.skip('grade projection scenarios (human implementation pending)', () =>
       expect(result.need.setByHurdle).toBe(false);
     }
   });
+  it('raw need above the hurdle keeps the calculated score', () => {
+    const result = projectGrade(course, [assessments[0]!, assessments[1]!, assessments[2]!, assessments[3]!, item('final', 40, undefined, true, 40)], 'H1');
+    expect(result.need.status).toBe('score');
+    if (result.need.status === 'score') {
+      expect(result.need.value).toBeCloseTo(76.6, 1);
+      expect(result.need.setByHurdle).toBe(false);
+    }
+  });
   it('hurdle sets the floor', () => {
     const result = projectGrade(course, [assessments[0]!, assessments[1]!, assessments[2]!, item('d', 25, 60), item('final', 40, undefined, true, 40)], 'P');
     expect(result.need).toEqual({ status: 'score', value: 40, setByHurdle: true });
