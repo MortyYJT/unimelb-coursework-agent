@@ -1,7 +1,7 @@
 # 交接
 
 > 单文件，只写当前状态，覆盖而不追加。信任之前先对照 `git status` 和 `git log`。
-> 背景：`note/product/vision.md`、`note/product/roadmap.md`、`note/decisions.md`（#1–#37）、`~/Documents/career-plan/总纲.md`（线 2）。
+> 背景：`note/product/vision.md`、`note/product/roadmap.md`、`note/decisions.md`（#1–#38）、`~/Documents/career-plan/总纲.md`（线 2）。
 
 - **最后更新：** 2026-10-11，`main` 在 PR #6 合并之后（`56e5762` 再加本交接 PR）
 - **项目：** `coursework`：以课业为核心的个人行动中心；定位「让通用 agent 能可靠读写墨大课业数据的工具层和运行时」（#29）
