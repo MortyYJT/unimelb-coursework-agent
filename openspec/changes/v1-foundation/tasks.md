@@ -1,4 +1,4 @@
-Issue mapping for dispatch: groups 1–2 are issue A (blocks the rest); groups 3, 4, and 5 are issues B, C, and D and run in parallel worktrees once A is merged. Every task is TDD: the failing test comes first, built from the scenarios in `specs/`.
+Issue mapping for dispatch: groups 1–2 are issue A (blocks the rest); groups 3, 4, and 5 are issues B, C, and D and run in parallel workspaces (standalone clones) once A is merged. Every task is TDD: the failing test comes first, built from the scenarios in `specs/`.
 
 ## 1. Project scaffold and checks (issue A)
 
