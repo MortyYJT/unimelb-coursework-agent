@@ -12,7 +12,7 @@ Issue mapping for dispatch: groups 1–2 are issue A (blocks the rest); groups 3
 - [ ] 2.1 `src/domain/schemas.ts`: zod schemas for Module, Course, Assessment, SourceItem, Citation, Step, Task, Change, Run with inferred types; tests for each scenario in `specs/domain-model` that covers parsing and invariants
 - [ ] 2.2 Course weight check for completed courses (sum must be 100) with a message naming the course and the sum
 - [ ] 2.3 `src/domain/progress.ts`: module progress (non-recurring steps only, 0 when empty)
-- [ ] 2.4 `src/domain/grade.ts`: `projectGrade()` per `specs/domain-model` "Grade projection", including hurdle floor, `unreachable`, `secured`, and the nothing-graded case — **TODO(human) if the user opts in: implementer writes the tests and a stub that throws; the user writes the body**
+- [ ] 2.4 `src/domain/grade.ts`: `projectGrade()` per `specs/domain-model` "Grade projection", including hurdle floor, `unreachable`, `secured`, and the nothing-graded case — **TODO(human) (decision #34): implementer writes the tests and a stub that throws; the user writes the body**
 - [ ] 2.5 Synthetic fixtures in `test/fixtures/` (fake course codes; no real course data)
 
 ## 3. Local store (issue B)
