@@ -1,9 +1,10 @@
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync, utimesSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
-import { acquireProfileLock, ProfileLockedError } from '../../src/capture/lock.js';
+import { acquireProfileLock } from '../../src/capture/lock.js';
+import { CourseworkError } from '../../src/protocol/errors.js';
 import { profilesDir } from '../../src/config/data-dir.js';
 let home: string;
 beforeEach(() => { home = mkdtempSync(join(tmpdir(), 'coursework-lock-')); vi.stubEnv('COURSEWORK_HOME', home); });
@@ -12,7 +13,7 @@ it('rejects a second capture with LOCKED and preserves the first holder', () => 
   const release = acquireProfileLock();
   const path = join(profilesDir(), 'default.lock');
   expect(readFileSync(path, 'utf8')).toBe(String(process.pid));
-  expect(() => acquireProfileLock()).toThrow(ProfileLockedError);
+  expect(() => acquireProfileLock()).toThrow(CourseworkError);
   try { acquireProfileLock(); } catch (error) {
     expect(error).toMatchObject({ code: 'LOCKED', message: expect.stringContaining(String(process.pid)) });
   }
@@ -29,9 +30,40 @@ it('reclaims a stale lock naming an exited process', () => {
   expect(readFileSync(path, 'utf8')).toBe(String(process.pid));
   release();
 });
-it('fails closed on a malformed lock rather than deleting another holder', () => {
+it('keeps a fresh empty lock locked while its holder may be writing the pid', () => {
   const path = join(profilesDir(), 'default.lock');
   writeFileSync(path, '');
-  expect(() => acquireProfileLock()).toThrow(ProfileLockedError);
+  expect(() => acquireProfileLock()).toThrow(CourseworkError);
   expect(readFileSync(path, 'utf8')).toBe('');
+});
+
+it('reclaims an empty lock older than ten seconds', () => {
+  const path = join(profilesDir(), 'default.lock');
+  writeFileSync(path, '');
+  const old = new Date(Date.now() - 11_000);
+  utimesSync(path, old, old);
+  const release = acquireProfileLock();
+  expect(readFileSync(path, 'utf8')).toBe(String(process.pid));
+  release();
+  expect(existsSync(path)).toBe(false);
+});
+it('keeps an empty lock at the ten-second boundary locked', () => {
+  const path = join(profilesDir(), 'default.lock');
+  writeFileSync(path, '');
+  const now = Date.now();
+  const old = new Date(now - 10_000);
+  utimesSync(path, old, old);
+  const clock = vi.spyOn(Date, 'now').mockReturnValue(now);
+  try {
+    expect(() => acquireProfileLock()).toThrow(CourseworkError);
+    expect(readFileSync(path, 'utf8')).toBe('');
+  } finally { clock.mockRestore(); }
+});
+it('keeps an old nonempty malformed lock locked', () => {
+  const path = join(profilesDir(), 'default.lock');
+  writeFileSync(path, 'invalid');
+  const old = new Date(Date.now() - 60_000);
+  utimesSync(path, old, old);
+  expect(() => acquireProfileLock()).toThrow(CourseworkError);
+  expect(readFileSync(path, 'utf8')).toBe('invalid');
 });
