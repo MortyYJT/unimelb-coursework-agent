@@ -3,9 +3,9 @@
 > 单文件，只写当前状态，覆盖而不追加。信任之前先对照 `git status` 和 `git log`。
 > 背景：`~/Documents/career-plan/总纲.md`（线 2）、`note/product/vision.md`、`note/product/roadmap.md`、`note/decisions.md`（#1–#32）。
 
-- **最后更新：** 2026-10-10，分支 `claude/v1-design`（`main` 在 `12397d2`），设计 PR 等用户批准规格
+- **最后更新：** 2026-10-10，分支 `claude/v1-design`（`main` 在 `12397d2`），设计 PR #4 规格已批准（#33），待审查后合并
 - **项目：** `coursework`：以课业为核心的个人行动中心；定位是「让通用 agent 能可靠读写墨大课业数据的工具层和运行时」（#29）
-- **OpenSpec change：** `v1-foundation`（M0，已通过 `openspec validate --strict`，**还没批准**）
+- **OpenSpec change：** `v1-foundation`（M0，已通过 `openspec validate --strict`，用户已批准 #33；`projectGrade()` 由用户亲手写 #34）
 
 ## 已完成（有证据）
 - 架构 A + 写入校验（#13、#14）；Hermes 跑主动循环（#16）；Node 24 + `node:sqlite`（#17、#18）；CLI + MCP（#30）
