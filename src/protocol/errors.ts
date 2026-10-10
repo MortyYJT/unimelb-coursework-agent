@@ -1,0 +1,26 @@
+export const retryable = Object.freeze({
+  INVALID_INPUT: false,
+  NOT_FOUND: false,
+  CONFLICT: true,
+  AUTH_EXPIRED: false,
+  SOURCE_UNAVAILABLE: true,
+  LOCKED: true,
+  CITATION_MISMATCH: false,
+  LIMIT_EXCEEDED: false,
+  INTERNAL: false,
+} as const);
+
+export type ErrorCode = keyof typeof retryable;
+
+export class CourseworkError extends Error {
+  readonly code: ErrorCode;
+  readonly next?: string;
+
+  constructor(code: ErrorCode, message: string, next?: string) {
+    super(message);
+    this.name = 'CourseworkError';
+    this.code = code;
+    // Authentication recovery always belongs to the user, regardless of caller hints.
+    this.next = code === 'AUTH_EXPIRED' ? 'Ask the user to sign in again.' : next;
+  }
+}
