@@ -40,3 +40,4 @@
 | 33 | 2026-10-10 | 批准 OpenSpec change `v1-foundation`（M0：domain-model、local-store、agent-envelope、page-capture；issue A 先做，B/C/D 并行） | 用户 | 关口 1；设计 PR #4 依 #12 可在记录后合并 |
 | 34 | 2026-10-10 | `projectGrade()` 的函数体由用户亲手写（Codex 只写测试和抛错的空函数，留 `TODO(human)`） | 用户（选了推荐项） | 面试时能说清楚自己写的核心业务逻辑；纯函数、有现成测试，不阻塞其他线 |
 | 35 | 2026-10-10 | M0 依赖：typescript、vitest、zod、commander、playwright（加 @types/node）；MCP SDK 留到 `v1-protocol` 再问 | 用户（选了推荐项） | PR #4 审查指出：技术选型时这几个包只写成了「默认」，没有按 AGENTS.md「加依赖先问」走，这里补上 |
+| 36 | 2026-10-10 | 审查满 2 轮后，PR #4（设计 + `v1-foundation` 规格）由用户决定合并 | 用户 | 两轮共 13 处问题已全部修完；第 2 轮剩下的 3 处是措辞上的歧义，Claude 修完并逐一核对 |
