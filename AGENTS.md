@@ -51,6 +51,7 @@ Roles: OpenSpec owns *what* we build and the current-truth specs. Superpowers ow
 
 - At the start of a session, read `note/handoff.md` if it exists, and check it against `git status` and `git log` before trusting it.
 - Before ending a session, or when the user asks for a handoff, overwrite `note/handoff.md` (format in the guidelines, "Communication and documentation").
+- Session hygiene: when the context window is getting full, or the work moves to a new stage or an unrelated task, proactively write or update `note/handoff.md` (current state, next steps, open questions, conventions), commit it, start a fresh session whose opening prompt points to that file, and archive the old session. Tell the user in one line at most; do everything else automatically.
 
 ## Read before the relevant task
 
